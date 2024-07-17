@@ -1,0 +1,8 @@
+[runner]
+fastReruns = true
+
+[server]
+headless = true
+runOnSave = true
+enableXsrfProtection = false
+enableCORS = false
