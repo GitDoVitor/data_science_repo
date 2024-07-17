@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "datatran-analysis"
+version = "0.1.0"
+description = ""
+authors = ["João Vitor <47799153+GitDoVitor@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+streamlit = "^1.36.0"
+
+
+[tool.poetry.group.dev.dependencies]
+blue = "^0.9.1"
+isort = "^5.13.2"
+taskipy = "^1.13.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.isort]
+profile = "black"
+line_length = 79
+
+
+[tool.taskipy.tasks]
+lint = "blue . && isort ."
+run = "streamlit run datatran_analysis/streamlit_app.py"
