@@ -14,6 +14,7 @@ streamlit = "^1.36.0"
 blue = "^0.9.1"
 isort = "^5.13.2"
 taskipy = "^1.13.0"
+ipykernel = "^6.29.5"
 
 [build-system]
 requires = ["poetry-core"]
@@ -27,4 +28,5 @@ line_length = 79
 
 [tool.taskipy.tasks]
 lint = "blue . && isort ."
+pre_run = "task lint"
 run = "streamlit run datatran_analysis/streamlit_app.py"
