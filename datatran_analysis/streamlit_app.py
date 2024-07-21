@@ -1,5 +1,6 @@
 import pandas as pd
 import streamlit as st
+import io
 
 st.set_page_config(
     page_title='Análise de Acidentes de Trânsito',
@@ -40,7 +41,7 @@ if not uploaded_csv:
         icon='ℹ️',
     )
 else:
-    data = pd.read_csv(uploaded_csv, sep=';', encoding='latin1')
+    data = pd.read_csv(uploaded_csv, sep=';', encoding='latin1', decimal=',')
     st.write('# Sobre esse projeto')
     st.write(
         'Este é um projeto de análise de dados disponibilizados pela <span style="color: #FF6161">Polícia Rodoviária Federal (PRF)</span>. O objetivo é analisar e visualizar informações sobre acidentes de trânsito ocorridos em rodovias federais brasileiras. Para isso, utilizei a linguagem de programação <span style="color: #FF6161">Python</span>, as bibliotecas <span style="color: #FF6161">Pandas</span> e <span style="color: #FF6161">Potly</span> para desenvolvimento das análises e criação dos gráficos e o <span style="color: #FF6161">Streamlit</span> para organização do dashboard.',
@@ -56,7 +57,7 @@ else:
     st.write(
         'Depois de selecionarmos as colunas que serão utilizadas na análise, o dataset ficou assim:'
     )
-    data.fillna('Não informado', inplace=True)
+    
     data.drop(
         columns=[
             'id',
@@ -117,6 +118,94 @@ else:
             unsafe_allow_html=True,
         )
     st.divider()
+
+    st.write('## Hora da Exploração')
+    st.write("Antes de começar a explorar os dados, vamos dar uma olhadela nas colunas disponíveis no dataset.")
+
+    col1, col2 = st.columns(2)
+    buffer = io.StringIO()
+    data.info(buf=buffer)
+    s = buffer.getvalue()
+
+    with col1:
+        st.code(s)
+
+    st.write('É possível observar que nossas colunas estão sendo tratadas como <span style="color: #FF6161">object</span> e alguns registros estão com o valor <span style="color: #FF6161">None</span>. O que não é o ideal para a análise de dados. Vamos corrigir isso!', unsafe_allow_html=True)
+
+    st.write('### Limpeza e tratamento')
+    st.write('Vamos começar tratando os valores ausentes no dataset. Para isso, vamos preencher os valores ausentes com a string <span style="color: #FF6161">Não informado</span>.', unsafe_allow_html=True)
     
-    st.write('## Hora de explorar os dados')
+    col3, col4 = st.columns(2)
+    with col3:
+        data.fillna('Não informado', inplace=True)
+        st.code('data.fillna("Não informado", inplace=True)', language='python')
+
+    col5, col6 = st.columns([2, 1])
+    with col5:
+        data['data_inversa'] = pd.to_datetime(data['data_inversa'])
+                
+        data['dia_semana'] = data['dia_semana'].astype('category')
+                
+        data['uf'] = data['uf'].astype('category')
+                
+        data['br'] = data['br'].astype('category')
+                
+        data['municipio'] = data['municipio'].astype('category')
+                
+        data['causa_acidente'] = data['causa_acidente'].astype('category')
+                
+        data['tipo_acidente'] = data['tipo_acidente'].astype('category')
+                
+        data['classificacao_acidente'] = data['classificacao_acidente'].astype('category')
+                
+        data['fase_dia'] = data['fase_dia'].astype('category')
+                
+        data['condicao_metereologica'] = data['condicao_metereologica'].astype('category')
+                
+        data['tipo_pista'] = data['tipo_pista'].astype('category')
+                
+        data['latitude'] = data['latitude'].astype('float')
+                
+        data['longitude'] = data['longitude'].astype('float')
+
+        st.write('Agora, vamos converter as colunas para os tipos de dados corretos.')
+        st.code('''
+        ### Convertendo o tipo do campo de data
+        data['data_inversa'] = pd.to_datetime(data['data_inversa'])
+                
+        ### Convertendo o tipo das colunas para category
+        data['dia_semana'] = data['dia_semana'].astype('category')
+                
+        data['uf'] = data['uf'].astype('category')
+                
+        data['br'] = data['br'].astype('category')
+                
+        data['municipio'] = data['municipio'].astype('category')
+                
+        data['causa_acidente'] = data['causa_acidente'].astype('category')
+                
+        data['tipo_acidente'] = data['tipo_acidente'].astype('category')
+                
+        data['classificacao_acidente'] = data['classificacao_acidente'].astype('category')
+                
+        data['fase_dia'] = data['fase_dia'].astype('category')
+                
+        data['condicao_metereologica'] = data['condicao_metereologica'].astype('category')
+                
+        data['tipo_pista'] = data['tipo_pista'].astype('category')
+                
+        data['latitude'] = data['latitude'].astype('float')
+                
+        data['longitude'] = data['longitude'].astype('float')
+        ''', language='python')
+
+        new_buffer = io.StringIO()
+        data.info(buf=new_buffer)
+        ns = new_buffer.getvalue()
+
+        st.write('Agora, vamos verificar se os tipos de dados foram convertidos corretamente.')
+        st.code(ns)
+    st.write('Pronto! Agora temos os tipos de dados corretos para cada coluna do dataset.')
+    st.write('Esse é o resultado final do dataset após a limpeza e tratamento dos dados:')
+    st.dataframe(data.head(10))
     
